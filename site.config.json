@@ -1,0 +1,16 @@
+{
+  "compte": "",
+  "pseudo": "",
+  "accroche": "Mes projets open source, dans un terminal à explorer.",
+  "mots": ["curieuse", "créative", "dynamique"],
+  "presentation": [
+    "Bonjour !",
+    "",
+    "Ce terminal montre mes projets open source.",
+    "Tapez « projets », ou insérez une cartouche à droite."
+  ],
+  "terminal": { "nom": "niki-os", "invite": "niki" },
+  "palette": "bonbon",
+  "projets": [],
+  "bientot": []
+}

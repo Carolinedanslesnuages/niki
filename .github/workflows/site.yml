@@ -1,0 +1,71 @@
+name: Site
+
+on:
+  push:
+    branches:
+      - main
+  # Reconstruit chaque nuit : versions et fichiers des projets à jour
+  schedule:
+    - cron: "0 3 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  construire:
+    name: Construire et vérifier (parcours + RGAA)
+    # Ubuntu 24.04 fixé : Playwright 1.56 ne prend pas en charge Ubuntu 26.04 (ubuntu-latest).
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7.0.1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: npm test
+
+      # Seuls les dépôts publics de site.config.json sont collectés (refus sinon).
+      - name: Collecter les projets depuis GitHub
+        run: npm run collecter
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - run: npm run build
+
+      # Accessibilité (RGAA) et parcours dans un vrai navigateur : si un critère casse,
+      # le site n'est pas publié.
+      - name: Installer Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Vérifier le site dans le navigateur (parcours + RGAA)
+        run: |
+          npx vite preview --port 4173 &
+          npx wait-on@8.0.1 -t 30000 http://localhost:4173/
+          npm run test:navigateur
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist
+
+  publier:
+    name: Publier sur GitHub Pages
+    needs: construire
+    # Le dépôt modèle lui-même ne publie rien : seules ses copies ont des projets à montrer.
+    if: github.repository != 'Carolinedanslesnuages/niki'
+    runs-on: ubuntu-24.04
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploiement.outputs.page_url }}
+    steps:
+      - name: Publier
+        id: deploiement
+        uses: actions/deploy-pages@v4

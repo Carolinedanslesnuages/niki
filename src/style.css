@@ -1,0 +1,180 @@
+
+/* Niki — le cyberdeck pastel.
+   Mise en page : un cyberdeck pastel posé sur un tapis quadrillé — écran-terminal à gauche,
+   baie de cartouches (les projets) à droite, rangée de touches dessous. Un seul univers visuel,
+   assumé (pas de thème sombre séparé : l'écran est déjà sombre, le boîtier reste pastel). */
+:root {
+  color-scheme: light;
+  --tapis: #f7e8f4;          /* fond quadrillé */
+  --tapis-ligne: #ecd3e6;
+  --plastique: #d8c6f3;      /* coque lilas */
+  --plastique-ombre: #b9a2e2;
+  --plastique-clair: #ece2fb;
+  --encre: #2b1d3f;          /* texte sur plastique */
+  --rose: #ff6fbf;           /* accent */
+  --menthe: #6ff2c4;         /* LED, état « en ligne » */
+  --jaune: #ffd36e;          /* LED, état « en préparation » */
+  --ecran: #1d1430;          /* écran éteint */
+  --phosphore: #ffb1df;      /* texte de l'écran */
+  --phosphore-doux: #c7a6e8;
+  --etiquette: #fff7fc;
+  --f-ecran: "VT323", ui-monospace, "SF Mono", Menlo, monospace;
+  --f-tech: "Chakra Petch", "Segoe UI", system-ui, sans-serif;
+  --f-sticker: "Fredoka", "Trebuchet MS", system-ui, sans-serif;
+}
+.deck[data-palette="menthe"] { --rose: #3fd9a8; --phosphore: #a8ffe0; --phosphore-doux: #7fd3c0; --plastique: #c9f0e4; --plastique-ombre: #9fd8c6; --plastique-clair: #e6faf3; }
+.deck[data-palette="peche"] { --rose: #ff8a5c; --phosphore: #ffd0b0; --phosphore-doux: #f2a98a; --plastique: #ffd9c7; --plastique-ombre: #f3b79b; --plastique-clair: #fff0e7; }
+
+* { box-sizing: border-box; }
+.vh { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.ecran:focus-visible { outline: 3px solid var(--rose); outline-offset: 3px; }
+body {
+  margin: 0;
+  background-color: var(--tapis);
+  background-image:
+    linear-gradient(var(--tapis-ligne) 1px, transparent 1px),
+    linear-gradient(90deg, var(--tapis-ligne) 1px, transparent 1px);
+  background-size: 28px 28px;
+  color: var(--encre);
+  font-family: var(--f-tech);
+  padding-block: 32px 48px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.page { max-width: 1120px; margin: 0 auto; display: grid; gap: 22px; }
+
+.entete { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 20px; }
+.entete h1 { margin: 0; font-family: var(--f-tech); font-weight: 700; font-size: clamp(22px, 4vw, 30px); letter-spacing: .02em; }
+.entete h1 span { color: var(--rose); }
+.entete p { margin: 0; font-family: var(--f-sticker); font-size: 15px; color: #6b5a85; }
+
+/* ——— le boîtier ——— */
+.deck {
+  position: relative;
+  background: linear-gradient(160deg, var(--plastique-clair), var(--plastique) 40%, var(--plastique-ombre));
+  border-radius: 26px;
+  padding: 22px;
+  box-shadow: 0 2px 0 #fff inset, 0 -3px 0 rgba(43,29,63,.12) inset, 0 18px 40px -18px rgba(90,50,130,.45);
+  display: grid;
+  grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr);
+  grid-template-areas: "ecran baie" "touches baie"; /* ordre visuel = ordre de tabulation (RGAA 12.8) */
+  gap: 18px;
+  transition: background .4s;
+}
+.vis { position: absolute; width: 10px; height: 10px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #fff, var(--plastique-ombre)); box-shadow: inset 0 0 0 1px rgba(43,29,63,.18); }
+.vis::after { content: ""; position: absolute; inset: 4px 1px; background: rgba(43,29,63,.35); transform: rotate(35deg); border-radius: 1px; }
+.vis.hg { top: 9px; left: 9px; } .vis.hd { top: 9px; right: 9px; } .vis.bg { bottom: 9px; left: 9px; } .vis.bd { bottom: 9px; right: 9px; }
+
+/* ——— l'écran ——— */
+.ecran-cadre { grid-area: ecran; background: #120c1e; border-radius: 16px; padding: 14px; box-shadow: inset 0 0 0 3px #2c2142, 0 1px 0 #fff; display: grid; gap: 10px; min-width: 0; }
+.ecran-barre { display: flex; justify-content: space-between; align-items: center; font: 500 11px var(--f-tech); letter-spacing: .14em; text-transform: uppercase; color: var(--phosphore-doux); }
+.led { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--menthe); box-shadow: 0 0 8px var(--menthe); margin-right: 6px; vertical-align: 1px; }
+.ecran {
+  position: relative; background: radial-gradient(ellipse at center, #2a1c45 0%, var(--ecran) 75%);
+  border-radius: 10px; min-height: 340px; max-height: 440px; overflow-y: auto; padding: 14px 16px;
+  font-family: var(--f-ecran); font-size: 21px; line-height: 1.25; color: var(--phosphore);
+  text-shadow: 0 0 6px color-mix(in srgb, var(--phosphore) 55%, transparent);
+}
+.ecran::after { /* lignes de balayage */
+  content: ""; position: sticky; display: block; inset: 0; height: 0; pointer-events: none;
+}
+.ecran-cadre { position: relative; }
+.balayage { position: absolute; inset: 52px 14px 66px; border-radius: 10px; pointer-events: none;
+  background: repeating-linear-gradient(transparent 0 2px, rgba(0,0,0,.18) 2px 3px); mix-blend-mode: multiply; }
+.sortie .ligne { margin: 0 0 2px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.sortie .moi { color: var(--phosphore-doux); }
+.sortie .titre { color: #fff; }
+.sortie .ok { color: var(--menthe); }
+.sortie .att { color: var(--jaune); }
+.sortie a { color: #fff; text-decoration-color: var(--rose); text-underline-offset: 3px; }
+.sortie code { font-family: var(--f-ecran); color: var(--menthe); }
+.sortie .entree { all: unset; cursor: pointer; color: #fff; border-bottom: 1px dotted var(--rose); }
+.sortie .entree.dossier { color: var(--menthe); }
+.sortie .entree:hover, .sortie .entree:focus { background: color-mix(in srgb, var(--rose) 35%, transparent); }
+/* RGAA 10.7 : contour net à la prise de focus, en plus du fond */
+.sortie .entree:focus { outline: 2px solid var(--rose); outline-offset: 2px; }
+.sortie .grille { display: flex; flex-wrap: wrap; gap: 2px 18px; }
+.sortie mark { background: var(--rose); color: var(--ecran); text-shadow: none; padding: 0 2px; }
+.sortie .fichier { color: #f3e8ff; }
+.saisie { display: flex; gap: 8px; align-items: center; font-family: var(--f-ecran); font-size: 21px; color: var(--phosphore); }
+.saisie label { color: var(--rose); white-space: nowrap; }
+.saisie input { flex: 1; min-width: 0; background: transparent; border: 0; border-bottom: 1px dashed #4a3a66; color: #fff; font: inherit; caret-color: var(--rose); padding: 2px 0; }
+.saisie input:focus { outline: none; border-bottom-color: var(--rose); }
+
+/* ——— la baie à cartouches ——— */
+.baie { grid-area: baie; display: grid; gap: 12px; align-content: start; min-width: 0; }
+.baie h2 { margin: 2px 0 0; font: 700 12px var(--f-tech); letter-spacing: .18em; text-transform: uppercase; color: #3d2d57; }
+.cartouche {
+  all: unset; box-sizing: border-box; cursor: pointer; position: relative; display: grid; grid-template-columns: 34px minmax(0,1fr); gap: 12px; align-items: center;
+  padding: 12px 14px 12px 12px; border-radius: 12px; background: var(--etiquette);
+  box-shadow: 0 0 0 2px var(--encre), 4px 4px 0 var(--encre);
+  transition: transform .15s, box-shadow .15s;
+}
+.cartouche:hover { transform: translate(-1px,-1px); box-shadow: 0 0 0 2px var(--encre), 6px 6px 0 var(--rose); }
+.cartouche:active { transform: translate(3px,3px); box-shadow: 0 0 0 2px var(--encre), 1px 1px 0 var(--encre); }
+.cartouche:focus-visible { outline: 3px solid var(--rose); outline-offset: 4px; }
+.cartouche .fente { height: 46px; border-radius: 6px; background: repeating-linear-gradient(90deg, var(--plastique-ombre) 0 4px, var(--plastique) 4px 7px); box-shadow: inset 0 0 0 2px var(--encre); }
+.cartouche b { display: block; font: 700 18px var(--f-tech); }
+.cartouche small { display: block; font: 500 13px var(--f-sticker); color: #6b5a85; margin-top: 2px; }
+.etat { position: absolute; top: 10px; right: 12px; font: 700 10px var(--f-tech); letter-spacing: .12em; text-transform: uppercase; display: flex; align-items: center; gap: 5px; }
+.etat i { width: 7px; height: 7px; border-radius: 50%; background: var(--menthe); box-shadow: 0 0 6px var(--menthe); }
+.etat.prep i { background: var(--jaune); box-shadow: 0 0 6px var(--jaune); }
+.cartouche.vide { cursor: default; background: transparent; box-shadow: 0 0 0 2px dashed var(--encre); border: 2px dashed rgba(43,29,63,.45); box-shadow: none; }
+.cartouche.vide:hover, .cartouche.vide:active { transform: none; box-shadow: none; }
+
+/* ——— les touches ——— */
+.touches { grid-area: touches; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.touche {
+  font: 700 13px var(--f-tech); letter-spacing: .06em; color: var(--encre); cursor: pointer;
+  background: linear-gradient(#fff, var(--plastique-clair)); border: 0; border-radius: 9px; padding: 10px 14px 12px;
+  box-shadow: 0 0 0 2px var(--encre), 0 4px 0 2px var(--encre); transform: translateY(-2px); transition: transform .08s, box-shadow .08s;
+}
+.touche:active, .touche.appuyee { transform: translateY(2px); box-shadow: 0 0 0 2px var(--encre), 0 0 0 2px var(--encre); }
+.touche:focus-visible { outline: 3px solid var(--rose); outline-offset: 4px; }
+.touche.rose { background: linear-gradient(#ffc6e6, var(--rose)); }
+.touches .espace { flex: 1; }
+.interrupteur { display: flex; align-items: center; gap: 8px; font: 700 11px var(--f-tech); letter-spacing: .14em; text-transform: uppercase; color: #3d2d57; }
+
+/* ——— autocollants ——— */
+.sticker { position: absolute; font-family: var(--f-sticker); font-weight: 600; pointer-events: none; filter: drop-shadow(1px 2px 0 rgba(43,29,63,.25)); }
+.sticker.nuage { top: -20px; right: 42%; transform: rotate(-6deg); } /* au-dessus du cadre de l écran, sans cacher le titre des cartouches */
+.sticker.mots { bottom: -14px; left: 28px; transform: rotate(2deg); background: var(--etiquette); padding: 6px 12px; border-radius: 999px; box-shadow: 0 0 0 2px var(--encre); font-size: 13px; color: var(--encre); }
+.sticker.coeur { top: 40%; right: -12px; transform: rotate(14deg); }
+
+.pied { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 16px; font: 500 13px var(--f-sticker); color: #6b5a85; }
+.pied a { color: var(--encre); text-decoration-color: var(--rose); text-underline-offset: 3px; }
+
+@media (max-width: 760px) {
+  .deck { grid-template-columns: minmax(0,1fr); grid-template-areas: "ecran" "touches" "baie"; padding: 16px; }
+  .ecran { min-height: 280px; font-size: 19px; }
+  .sticker.coeur { display: none; }
+  .sticker.nuage { right: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
+
+/* Ajouts du site */
+html { -webkit-text-size-adjust: 100%; }
+.cartouche-lien { text-decoration: none; color: inherit; }
+.sortie .entree { font: inherit; }
+.chargement { color: var(--phosphore-doux); }
+
+/* RGAA 12.7 : lien d'évitement, visible à la prise de focus */
+.evitement { position: absolute; left: 12px; top: -60px; z-index: 20; background: var(--encre); color: #fff; padding: 10px 16px; border-radius: 8px; font: 700 14px var(--f-tech); }
+.evitement:focus { top: 12px; outline: 3px solid var(--rose); outline-offset: 2px; }
+/* RGAA 3.3 : le champ de saisie se distingue à 3:1 au moins */
+.saisie input { border-bottom: 2px solid var(--phosphore-doux); }
+.saisie input::placeholder { color: var(--phosphore-doux); opacity: 1; }
+/* RGAA 9.3 : listes de fichiers et de cartouches, sans puces */
+.sortie ul.grille, .liste-cartouches { list-style: none; margin: 0; padding: 0; }
+.liste-cartouches { display: grid; gap: 12px; }
+.liste-cartouches > li { display: grid; }
+
+/* RGAA 10.11 : à 320 px, l écran et le champ rétrécissent au lieu de déborder du cadre */
+.ecran-cadre > * { min-width: 0; }
+.ecran { overflow-x: hidden; }
+
+/* Baie vide : comment ajouter la première cartouche */
+.vide-message { margin: 0; padding: 14px; border-radius: 12px; border: 2px dashed rgba(43,29,63,.45); font: 500 14px var(--f-sticker); color: var(--encre); }
+.vide-message code { font-family: var(--f-ecran); font-size: 17px; }
