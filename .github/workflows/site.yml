@@ -33,7 +33,7 @@ jobs:
 
       # Seuls les dépôts publics de site.config.json sont collectés (refus sinon).
       - name: Collecter les projets depuis GitHub
-        run: npm run collecter
+        run: npm run collect
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
@@ -47,7 +47,7 @@ jobs:
         run: |
           npx vite preview --port 4173 &
           npx wait-on@8.0.1 -t 30000 http://localhost:4173/
-          npm run test:navigateur
+          npm run test:browser
 
       - uses: actions/upload-pages-artifact@v3
         with:
