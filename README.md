@@ -64,7 +64,7 @@ Le terminal reste utilisable au clavier et au lecteur d'écran : l'écran se lit
 annonce courte résume chaque commande, la touche Tab ne piège jamais le focus, les dessins en
 caractères sont masqués aux lecteurs d'écran, et tout ce qui s'affiche est cliquable.
 
-À chaque construction, `npm run test:navigateur` vérifie dans Chromium des critères du RGAA 4.1.2
+À chaque construction, `npm run test:browser` vérifie dans Chromium des critères du RGAA 4.1.2
 (lus avec [Marguerite](https://github.com/Carolinedanslesnuages/marguerite)) et axe-core
 (WCAG 2.1 AA), sur ordinateur, téléphone, à 320 px et à 200 % : **si un critère casse, le site
 n'est pas publié**.
@@ -73,11 +73,11 @@ n'est pas publié**.
 
 ```sh
 npm ci
-GITHUB_TOKEN=$(gh auth token) npm run collecter   # récupère vos projets
+GITHUB_TOKEN=$(gh auth token) npm run collect     # récupère vos projets
 npm run dev                                        # http://localhost:5173
 npm test                                           # moteur du terminal
 npm run build && npx vite preview --port 4173 &    # puis :
-npx playwright install chromium && npm run test:navigateur
+npx playwright install chromium && npm run test:browser
 ```
 
 Les PR sont contrôlées par [Constance](https://github.com/Carolinedanslesnuages/constance)
