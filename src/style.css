@@ -1,21 +1,21 @@
 
-/* Niki — le cyberdeck pastel.
-   Mise en page : un cyberdeck pastel posé sur un tapis quadrillé — écran-terminal à gauche,
-   baie de cartouches (les projets) à droite, rangée de touches dessous. Un seul univers visuel,
-   assumé (pas de thème sombre séparé : l'écran est déjà sombre, le boîtier reste pastel). */
+/* Niki — the pastel cyberdeck.
+   Layout: a pastel cyberdeck on a grid mat — terminal screen on the left,
+   cartridge bay (the projects) on the right, row of keys below. A single visual world, on
+   purpose (no separate dark theme: the screen is already dark, the case stays pastel). */
 :root {
   color-scheme: light;
-  --mat: #f7e8f4;          /* fond quadrillé */
+  --mat: #f7e8f4;          /* grid background */
   --mat-line: #ecd3e6;
-  --plastic: #d8c6f3;      /* coque lilas */
+  --plastic: #d8c6f3;      /* lilac case */
   --plastic-shadow: #b9a2e2;
   --plastic-light: #ece2fb;
-  --ink: #2b1d3f;          /* texte sur plastique */
+  --ink: #2b1d3f;          /* text on plastic */
   --pink: #ff6fbf;           /* accent */
-  --mint: #6ff2c4;         /* LED, état « en ligne » */
-  --yellow: #ffd36e;          /* LED, état « en préparation » */
-  --screen-color: #1d1430;          /* écran éteint */
-  --phosphor: #ffb1df;      /* texte de l'écran */
+  --mint: #6ff2c4;         /* LED, "released" status */
+  --yellow: #ffd36e;          /* LED, "in progress" status */
+  --screen-color: #1d1430;          /* screen when off */
+  --phosphor: #ffb1df;      /* screen text */
   --phosphor-soft: #c7a6e8;
   --label-paper: #fff7fc;
   --font-screen: "VT323", ui-monospace, "SF Mono", Menlo, monospace;
@@ -48,7 +48,7 @@ body {
 .site-header h1 span { color: var(--pink); }
 .site-header p { margin: 0; font-family: var(--font-sticker); font-size: 15px; color: #6b5a85; }
 
-/* ——— le boîtier ——— */
+/* ——— the case ——— */
 .deck {
   position: relative;
   background: linear-gradient(160deg, var(--plastic-light), var(--plastic) 40%, var(--plastic-shadow));
@@ -57,7 +57,7 @@ body {
   box-shadow: 0 2px 0 #fff inset, 0 -3px 0 rgba(43,29,63,.12) inset, 0 18px 40px -18px rgba(90,50,130,.45);
   display: grid;
   grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr);
-  grid-template-areas: "screen bay" "keys bay"; /* ordre visuel = ordre de tabulation (RGAA 12.8) */
+  grid-template-areas: "screen bay" "keys bay"; /* visual order = tab order (RGAA 12.8) */
   gap: 18px;
   transition: background .4s;
 }
@@ -65,7 +65,7 @@ body {
 .screw::after { content: ""; position: absolute; inset: 4px 1px; background: rgba(43,29,63,.35); transform: rotate(35deg); border-radius: 1px; }
 .screw.top-left { top: 9px; left: 9px; } .screw.top-right { top: 9px; right: 9px; } .screw.bottom-left { bottom: 9px; left: 9px; } .screw.bottom-right { bottom: 9px; right: 9px; }
 
-/* ——— l'écran ——— */
+/* ——— the screen ——— */
 .screen-frame { grid-area: screen; background: #120c1e; border-radius: 16px; padding: 14px; box-shadow: inset 0 0 0 3px #2c2142, 0 1px 0 #fff; display: grid; gap: 10px; min-width: 0; }
 .screen-bar { display: flex; justify-content: space-between; align-items: center; font: 500 11px var(--font-tech); letter-spacing: .14em; text-transform: uppercase; color: var(--phosphor-soft); }
 .status-light { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--mint); box-shadow: 0 0 8px var(--mint); margin-right: 6px; vertical-align: 1px; }
@@ -75,7 +75,7 @@ body {
   font-family: var(--font-screen); font-size: 21px; line-height: 1.25; color: var(--phosphor);
   text-shadow: 0 0 6px color-mix(in srgb, var(--phosphor) 55%, transparent);
 }
-.screen::after { /* lignes de balayage */
+.screen::after { /* scan lines */
   content: ""; position: sticky; display: block; inset: 0; height: 0; pointer-events: none;
 }
 .screen-frame { position: relative; }
@@ -91,7 +91,7 @@ body {
 .output .entry { all: unset; cursor: pointer; color: #fff; border-bottom: 1px dotted var(--pink); }
 .output .entry.folder { color: var(--mint); }
 .output .entry:hover, .output .entry:focus { background: color-mix(in srgb, var(--pink) 35%, transparent); }
-/* RGAA 10.7 : contour net à la prise de focus, en plus du fond */
+/* RGAA 10.7: a sharp outline on focus, on top of the background */
 .output .entry:focus { outline: 2px solid var(--pink); outline-offset: 2px; }
 .output .grid { display: flex; flex-wrap: wrap; gap: 2px 18px; }
 .output mark { background: var(--pink); color: var(--screen-color); text-shadow: none; padding: 0 2px; }
@@ -101,7 +101,7 @@ body {
 .command-line input { flex: 1; min-width: 0; background: transparent; border: 0; border-bottom: 1px dashed #4a3a66; color: #fff; font: inherit; caret-color: var(--pink); padding: 2px 0; }
 .command-line input:focus { outline: none; border-bottom-color: var(--pink); }
 
-/* ——— la baie à cartouches ——— */
+/* ——— the cartridge bay ——— */
 .bay { grid-area: bay; display: grid; gap: 12px; align-content: start; min-width: 0; }
 .bay h2 { margin: 2px 0 0; font: 700 12px var(--font-tech); letter-spacing: .18em; text-transform: uppercase; color: #3d2d57; }
 .cartridge {
@@ -122,7 +122,7 @@ body {
 .cartridge.empty { cursor: default; background: transparent; box-shadow: 0 0 0 2px dashed var(--ink); border: 2px dashed rgba(43,29,63,.45); box-shadow: none; }
 .cartridge.empty:hover, .cartridge.empty:active { transform: none; box-shadow: none; }
 
-/* ——— les touches ——— */
+/* ——— the keys ——— */
 .keys { grid-area: keys; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
 .key {
   font: 700 13px var(--font-tech); letter-spacing: .06em; color: var(--ink); cursor: pointer;
@@ -135,9 +135,9 @@ body {
 .keys .spacer { flex: 1; }
 .switch { display: flex; align-items: center; gap: 8px; font: 700 11px var(--font-tech); letter-spacing: .14em; text-transform: uppercase; color: #3d2d57; }
 
-/* ——— autocollants ——— */
+/* ——— stickers ——— */
 .sticker { position: absolute; font-family: var(--font-sticker); font-weight: 600; pointer-events: none; filter: drop-shadow(1px 2px 0 rgba(43,29,63,.25)); }
-.sticker.cloud { top: -20px; right: 42%; transform: rotate(-6deg); } /* au-dessus du cadre de l écran, sans cacher le titre des cartouches */
+.sticker.cloud { top: -20px; right: 42%; transform: rotate(-6deg); } /* above the screen frame, without hiding the cartridges' title */
 .sticker.words { bottom: -14px; left: 28px; transform: rotate(2deg); background: var(--label-paper); padding: 6px 12px; border-radius: 999px; box-shadow: 0 0 0 2px var(--ink); font-size: 13px; color: var(--ink); }
 .sticker.heart { top: 40%; right: -12px; transform: rotate(14deg); }
 
@@ -154,27 +154,27 @@ body {
   * { transition: none !important; animation: none !important; }
 }
 
-/* Ajouts du site */
+/* Site additions */
 html { -webkit-text-size-adjust: 100%; }
 .cartridge-link { text-decoration: none; color: inherit; }
 .output .entry { font: inherit; }
 .loading { color: var(--phosphor-soft); }
 
-/* RGAA 12.7 : lien d'évitement, visible à la prise de focus */
+/* RGAA 12.7: skip link, visible on focus */
 .skip-link { position: absolute; left: 12px; top: -60px; z-index: 20; background: var(--ink); color: #fff; padding: 10px 16px; border-radius: 8px; font: 700 14px var(--font-tech); }
 .skip-link:focus { top: 12px; outline: 3px solid var(--pink); outline-offset: 2px; }
-/* RGAA 3.3 : le champ de saisie se distingue à 3:1 au moins */
+/* RGAA 3.3: the input field stands out at 3:1 at least */
 .command-line input { border-bottom: 2px solid var(--phosphor-soft); }
 .command-line input::placeholder { color: var(--phosphor-soft); opacity: 1; }
-/* RGAA 9.3 : listes de fichiers et de cartouches, sans puces */
+/* RGAA 9.3: lists of files and cartridges, without bullets */
 .output ul.grid, .cartridge-list { list-style: none; margin: 0; padding: 0; }
 .cartridge-list { display: grid; gap: 12px; }
 .cartridge-list > li { display: grid; }
 
-/* RGAA 10.11 : à 320 px, l écran et le champ rétrécissent au lieu de déborder du cadre */
+/* RGAA 10.11: at 320 px, the screen and the field shrink instead of overflowing the frame */
 .screen-frame > * { min-width: 0; }
 .screen { overflow-x: hidden; }
 
-/* Baie vide : comment ajouter la première cartouche */
+/* Empty bay: how to add the first cartridge */
 .empty-message { margin: 0; padding: 14px; border-radius: 12px; border: 2px dashed rgba(43,29,63,.45); font: 500 14px var(--font-sticker); color: var(--ink); }
 .empty-message code { font-family: var(--font-screen); font-size: 17px; }
