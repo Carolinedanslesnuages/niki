@@ -1,0 +1,10 @@
+{
+  "dossier": "dist",
+  "budgets": {
+    "poids": 50,
+    "requetes": 10
+  },
+  "adresse": "",
+  "non-applicables": [],
+  "bloquant": true
+}
