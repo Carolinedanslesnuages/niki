@@ -43,6 +43,8 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - name: Construire le site
-        run: npm run build
+      - name: Collecter les projets et construire le site
+        run: npm run collect && npm run build
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
       - uses: Carolinedanslesnuages/eunice@v1
